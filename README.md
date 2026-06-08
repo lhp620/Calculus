@@ -1,6 +1,6 @@
 # AP Calculus AB/BC Interactive Learning
 
-An interactive, self-paced AP Calculus AB/BC learning site with 10 units and 61 lessons. Built with vanilla JavaScript, KaTeX for math rendering, and no external dependencies beyond KaTeX.
+An interactive, self-paced AP Calculus AB/BC learning site with 10 units and 62 lessons. Built with vanilla JavaScript, KaTeX for math rendering, and no external dependencies beyond KaTeX.
 
 **Live site:** https://lhp620.github.io/Calculus/
 
@@ -10,13 +10,15 @@ An interactive, self-paced AP Calculus AB/BC learning site with 10 units and 61 
 
 ## Features
 
-- **61 lessons** across 10 units covering the full AP Calculus AB/BC curriculum
+- **62 lessons** across 10 units covering the full AP Calculus AB/BC curriculum
+- **AB/BC study-mode toggle** — AB students can hide all BC-only content to focus their studying
 - **BC-only lessons clearly labeled** with pink "BC" badges throughout
 - **Three-tab lesson format:** Learn → Examples → Practice
+- **Keyboard navigation** — use ← / → to move between lessons
 - **KaTeX math rendering** for all formulas and equations
 - **Auto-graded practice problems** — multiple choice and fill-in-the-blank with instant feedback
 - **Progress tracking** saved in browser localStorage (streak, mastery status per lesson)
-- **Formula reference page** with search across 35 formulas
+- **Formula reference page** with search across 43 formulas
 - **Function grapher** — interactive canvas-based plotter
 - **Single-file build** — the entire site bundles into one self-contained `dist-web/index.html` (~852 KB)
 
@@ -31,7 +33,7 @@ An interactive, self-paced AP Calculus AB/BC learning site with 10 units and 61 
 | 3 | Differentiation: Composite & Implicit | AB + BC | 5 |
 | 4 | Contextual Applications of Differentiation | AB + BC | 5 |
 | 5 | Analytical Applications of Differentiation | AB + BC | 6 |
-| 6 | Integration & Accumulation of Change | AB + BC | 8 |
+| 6 | Integration & Accumulation of Change | AB + BC | 9 |
 | 7 | Differential Equations | AB + BC | 5 |
 | 8 | Applications of Integration | AB + BC | 6 |
 | 9 | Parametric, Polar & Vector-Valued Functions | **BC only** | 5 |

@@ -289,6 +289,123 @@ export const lessons = [
 
   {
     id: '6.3',
+    title: 'Trapezoidal Approximation',
+    unit: 6,
+    level: 'AB',
+    learn: `
+      <div class="concept-card">
+        <h2>From Rectangles to Trapezoids</h2>
+        <p>Riemann sums approximate area with flat-topped rectangles. The <strong>Trapezoidal Rule</strong> instead connects consecutive points on the curve with straight segments, forming trapezoids. Because a trapezoid hugs the curve far better than a rectangle, this usually gives a much more accurate estimate of $\\int_a^b f(x)\\,dx$.</p>
+        <p>A single trapezoid over $[x_{i-1}, x_i]$ has area $\\frac{1}{2}\\big(f(x_{i-1}) + f(x_i)\\big)\\,\\Delta x$ — the average of the two side heights times the width.</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>Trapezoidal Rule (equal width)</h3>
+        <p>$$T_n = \\frac{\\Delta x}{2}\\Big[f(x_0) + 2f(x_1) + 2f(x_2) + \\cdots + 2f(x_{n-1}) + f(x_n)\\Big]$$</p>
+        <p>where $\\Delta x = \\frac{b-a}{n}$. The first and last heights are weighted $1$; every interior height is weighted $2$.</p>
+      </div>
+
+      <div class="concept-card">
+        <h2>Two Useful Facts</h2>
+        <ul>
+          <li><strong>Average of Left and Right sums:</strong> $T_n = \\dfrac{L_n + R_n}{2}$. This is often the fastest way to compute it by hand.</li>
+          <li><strong>Over- vs. under-estimate:</strong> If the graph is <em>concave up</em> on $[a,b]$, the trapezoids lie above the curve, so $T_n$ <strong>overestimates</strong> the integral. If the graph is <em>concave down</em>, $T_n$ <strong>underestimates</strong> it.</li>
+        </ul>
+      </div>
+
+      <div class="concept-card">
+        <h2>Unequal Widths (data tables)</h2>
+        <p>On AP free-response questions, data is often given at unevenly spaced times. Then add up each trapezoid separately:</p>
+        <p>$$\\int_{x_0}^{x_n} f(x)\\,dx \\approx \\sum_{i=1}^{n} \\frac{f(x_{i-1}) + f(x_i)}{2}\\,(x_i - x_{i-1})$$</p>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">💡</div>
+        <p><strong>Tip:</strong> Don't forget the factor of $\\frac{1}{2}$, and remember only the two endpoints get a coefficient of 1 — every value in between is doubled.</p>
+      </div>
+    `,
+    examples: [
+      {
+        problem: 'Use the Trapezoidal Rule with $n = 4$ to approximate the area under $f(x) = x^2$ on $[0, 2]$.',
+        steps: [
+          'Compute $\\Delta x = \\frac{2-0}{4} = 0.5$, so the nodes are $0, 0.5, 1, 1.5, 2$',
+          'Heights: $f(0)=0,\\; f(0.5)=0.25,\\; f(1)=1,\\; f(1.5)=2.25,\\; f(2)=4$',
+          'Apply the rule (double the interior values): $T_4 = \\frac{0.5}{2}[\\,0 + 2(0.25) + 2(1) + 2(2.25) + 4\\,]$',
+          '$= 0.25\\,[\\,0 + 0.5 + 2 + 4.5 + 4\\,] = 0.25(11) = 2.75$',
+          'The exact area is $\\frac{8}{3} \\approx 2.667$. Since $x^2$ is concave up, $T_4 = 2.75$ overestimates — as expected.'
+        ],
+        answer: '$T_4 = 2.75$ square units (a slight overestimate)'
+      },
+      {
+        problem: 'A car\'s velocity $v(t)$ (ft/s) is recorded: $v(0)=0$, $v(2)=30$, $v(6)=45$, $v(10)=50$. Use a trapezoidal sum to estimate the distance traveled on $[0, 10]$.',
+        steps: [
+          'The subintervals are unequal: widths are $2, 4, 4$ seconds',
+          'Trapezoid 1 on $[0,2]$: $\\frac{0 + 30}{2}(2) = 30$',
+          'Trapezoid 2 on $[2,6]$: $\\frac{30 + 45}{2}(4) = 150$',
+          'Trapezoid 3 on $[6,10]$: $\\frac{45 + 50}{2}(4) = 190$',
+          'Add them: $30 + 150 + 190 = 370$ feet'
+        ],
+        answer: '$\\approx 370$ feet'
+      },
+      {
+        problem: 'For a function with $L_6 = 18.2$ and $R_6 = 21.0$ on $[1, 4]$, find the trapezoidal approximation $T_6$.',
+        steps: [
+          'Use the shortcut $T_n = \\frac{L_n + R_n}{2}$',
+          '$T_6 = \\frac{18.2 + 21.0}{2} = \\frac{39.2}{2}$',
+          '$T_6 = 19.6$'
+        ],
+        answer: '$T_6 = 19.6$'
+      }
+    ],
+    practice: [
+      {
+        type: 'fill',
+        question: 'Use the Trapezoidal Rule with $n = 2$ to approximate the area under $f(x) = x^2$ on $[0, 2]$. (Answer as a decimal.)',
+        answer: '3',
+        explanation: '$\\Delta x = 1$, nodes $0,1,2$ with heights $0,1,4$. $T_2 = \\frac{1}{2}[0 + 2(1) + 4] = \\frac{1}{2}(6) = 3$.'
+      },
+      {
+        type: 'mc',
+        question: 'If $f$ is concave up on $[a, b]$, the Trapezoidal Rule approximation of $\\int_a^b f(x)\\,dx$ will:',
+        choices: [
+          'Overestimate the integral',
+          'Underestimate the integral',
+          'Be exactly equal to the integral',
+          'Depend on whether $f$ is increasing'
+        ],
+        answer: 0,
+        explanation: 'When $f$ is concave up, each line segment lies above the curve, so the trapezoids enclose extra area — an overestimate.'
+      },
+      {
+        type: 'mc',
+        question: 'Given $L_4 = 12$ and $R_4 = 16$ for the same partition, the trapezoidal sum $T_4$ equals:',
+        choices: ['12', '14', '16', '28'],
+        answer: 1,
+        explanation: '$T_n = \\frac{L_n + R_n}{2} = \\frac{12 + 16}{2} = 14$.'
+      },
+      {
+        type: 'fill',
+        question: 'A table gives $f(0)=4$, $f(3)=10$, $f(5)=8$. Using trapezoids on the two subintervals, estimate $\\int_0^5 f(x)\\,dx$. (Answer as a decimal.)',
+        answer: '39',
+        explanation: 'Widths 3 and 2: $\\frac{4+10}{2}(3) + \\frac{10+8}{2}(2) = 21 + 18 = 39$.'
+      },
+      {
+        type: 'mc',
+        question: 'In the Trapezoidal Rule formula $T_n = \\frac{\\Delta x}{2}[f(x_0) + 2f(x_1) + \\cdots + 2f(x_{n-1}) + f(x_n)]$, which heights are NOT multiplied by 2?',
+        choices: [
+          'The two endpoint heights $f(x_0)$ and $f(x_n)$',
+          'All of the interior heights',
+          'The midpoint height only',
+          'None — every height is doubled'
+        ],
+        answer: 0,
+        explanation: 'Only the first and last function values carry a coefficient of 1; every interior value is doubled because it is shared by two adjacent trapezoids.'
+      }
+    ]
+  },
+
+  {
+    id: '6.4',
     title: 'The Definite Integral',
     unit: 6,
     level: 'AB',
@@ -397,7 +514,7 @@ export const lessons = [
   },
 
   {
-    id: '6.4',
+    id: '6.5',
     title: 'Fundamental Theorem of Calculus Part 1',
     unit: 6,
     level: 'AB',
@@ -501,7 +618,7 @@ export const lessons = [
   },
 
   {
-    id: '6.5',
+    id: '6.6',
     title: 'Fundamental Theorem of Calculus Part 2',
     unit: 6,
     level: 'AB',
@@ -605,7 +722,7 @@ export const lessons = [
   },
 
   {
-    id: '6.6',
+    id: '6.7',
     title: 'u-Substitution',
     unit: 6,
     level: 'AB',
@@ -719,7 +836,7 @@ export const lessons = [
   },
 
   {
-    id: '6.7',
+    id: '6.8',
     title: 'Integration by Parts',
     unit: 6,
     level: 'BC',
@@ -836,7 +953,7 @@ export const lessons = [
   },
 
   {
-    id: '6.8',
+    id: '6.9',
     title: 'Partial Fractions & Improper Integrals',
     unit: 6,
     level: 'BC',
