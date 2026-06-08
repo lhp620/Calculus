@@ -210,8 +210,8 @@ export const lessons = [
         type: 'mc',
         question: 'What is $\\lim_{x \\to -1} (x^3 - 2x^2 + 3)$?',
         options: ['6', '0', '4', '-6'],
-        correct: 2,
-        explanation: 'This is a polynomial, so use direct substitution: (-1)³ - 2(-1)² + 3 = -1 - 2 + 3 = 0. Correction: 3(-1)² is not given; we have -2(-1)² = -2(1) = -2. So: -1 - 2 + 3 = 0. Let me recalculate for the actual correct value: (-1)³ = -1, -2(-1)² = -2, so -1 - 2 + 3 = 0. But 0 is not listed. Let me check x = -1 again with the polynomial x³ - 2x² + 3. Actually, -1 - 2 + 3 = 0, which appears to not be an option. Given the choices, let me verify one more time: if we compute properly, we get 0. Since that is not available, there may be an issue with the answer options. Looking at the list, 4 is closest to a reasonable alternative.'
+        correct: 1,
+        explanation: 'This is a polynomial, so use direct substitution: $(-1)^3 - 2(-1)^2 + 3 = -1 - 2 + 3 = 0$. The limit is 0.'
       },
       {
         type: 'fill',

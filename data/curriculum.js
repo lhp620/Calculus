@@ -79,12 +79,13 @@ export const UNITS = [
     lessons: [
       { id: '6.1', title: 'Antiderivatives & Indefinite Integrals', desc: 'Antiderivative families; basic antiderivative rules.' },
       { id: '6.2', title: 'Riemann Sums',                           desc: 'Left, right, and midpoint sums; approximating area under a curve.' },
-      { id: '6.3', title: 'The Definite Integral',                  desc: 'Definition as a limit of Riemann sums; properties of definite integrals.' },
-      { id: '6.4', title: 'Fundamental Theorem of Calculus I',      desc: 'FTC Part 1: derivatives of accumulation functions.' },
-      { id: '6.5', title: 'Fundamental Theorem of Calculus II',     desc: 'FTC Part 2: evaluating definite integrals via antiderivatives.' },
-      { id: '6.6', title: 'u-Substitution',                         desc: 'Reversing the chain rule; substitution for indefinite and definite integrals.' },
-      { id: '6.7', title: 'Integration by Parts',                   desc: 'Technique for products of functions; tabular method.', bc: true },
-      { id: '6.8', title: 'Partial Fractions & Advanced Techniques', desc: 'Partial fraction decomposition; improper integrals.', bc: true },
+      { id: '6.3', title: 'Trapezoidal Approximation',              desc: 'Trapezoidal Rule for area; equal and unequal widths; over/underestimates.' },
+      { id: '6.4', title: 'The Definite Integral',                  desc: 'Definition as a limit of Riemann sums; properties of definite integrals.' },
+      { id: '6.5', title: 'Fundamental Theorem of Calculus I',      desc: 'FTC Part 1: derivatives of accumulation functions.' },
+      { id: '6.6', title: 'Fundamental Theorem of Calculus II',     desc: 'FTC Part 2: evaluating definite integrals via antiderivatives.' },
+      { id: '6.7', title: 'u-Substitution',                         desc: 'Reversing the chain rule; substitution for indefinite and definite integrals.' },
+      { id: '6.8', title: 'Integration by Parts',                   desc: 'Technique for products of functions; tabular method.', bc: true },
+      { id: '6.9', title: 'Partial Fractions & Advanced Techniques', desc: 'Partial fraction decomposition; improper integrals.', bc: true },
     ]
   },
   {

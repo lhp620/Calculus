@@ -16,6 +16,10 @@ export function renderHeader() {
         <a href="https://ko-fi.com/lllstudio" target="_blank" rel="noopener" class="nav-link nav-link-kofi">☕ Ko-fi</a>
       </nav>
       <div class="header-right">
+        <div class="mode-toggle" id="mode-toggle" role="group" aria-label="Course mode: AB or BC">
+          <button class="mode-btn" data-mode="AB" type="button" title="Hide BC-only content (AP Calculus AB)">AB</button>
+          <button class="mode-btn" data-mode="BC" type="button" title="Show all content (AP Calculus BC)">BC</button>
+        </div>
         <div id="nav-auth-btn" class="nav-auth"></div>
         <div class="nav-progress" title="Overall Progress" aria-label="Overall progress">
           <svg class="nav-progress-ring" viewBox="0 0 20 20" aria-hidden="true">

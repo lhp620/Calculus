@@ -34,6 +34,7 @@ export const FORMULAS = [
 
   // ── Unit 6: Integration ───────────────────────────────────────────────────
   { unit: 'Unit 6', name: 'Power Rule (Integration)', formula: '\\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1} + C \\quad (n \\neq -1)', notes: 'Indefinite integral; always add constant of integration C.', tags: ['power rule', 'integral', 'antiderivative'] },
+  { unit: 'Unit 6', name: 'Trapezoidal Rule', formula: 'T_n = \\dfrac{\\Delta x}{2}\\bigl[f(x_0) + 2f(x_1) + \\cdots + 2f(x_{n-1}) + f(x_n)\\bigr]', notes: 'Δx = (b−a)/n. Equals (Lₙ+Rₙ)/2. Overestimates when f is concave up, underestimates when concave down.', tags: ['trapezoidal', 'riemann', 'approximation', 'integral'] },
   { unit: 'Unit 6', name: 'FTC Part 1', formula: '\\dfrac{d}{dx}\\int_a^x f(t)\\,dt = f(x)', notes: 'The accumulation function is an antiderivative of f.', tags: ['FTC', 'fundamental theorem'] },
   { unit: 'Unit 6', name: 'FTC Part 2', formula: '\\int_a^b f(x)\\,dx = F(b) - F(a)', notes: 'Where F is any antiderivative of f.', tags: ['FTC', 'fundamental theorem', 'definite integral'] },
   { unit: 'Unit 6', name: 'u-Substitution', formula: '\\int f(g(x))\\,g\'(x)\\,dx = \\int f(u)\\,du \\quad (u = g(x))', notes: 'Change variables; remember to substitute limits on definite integrals.', tags: ['substitution', 'u-sub', 'integral'] },

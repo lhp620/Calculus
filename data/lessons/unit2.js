@@ -876,9 +876,9 @@ export const lessons = [
             explanation: '$\\frac{d}{dx}[\\sec x] = \\sec x \\tan x$ (positive if $\\tan x > 0$).'
           },
           {
-            text: '$\\cot x$',
-            correct: true,
-            explanation: '$\\frac{d}{dx}[\\cot x] = -\\csc^2 x$ (negative sign). All "co-" functions have negative derivatives.'
+            text: '$\\tan x$',
+            correct: false,
+            explanation: '$\\frac{d}{dx}[\\tan x] = \\sec^2 x$, which is always positive.'
           }
         ]
       }

@@ -11,10 +11,63 @@ import { renderMath } from './math-renderer.js';
  * @param {Function} onComplete - Called with (lessonId, score, total) on finish
  * @param {Function} onUpdate - Called after progress saved (e.g. refresh header)
  */
-export function renderQuiz(mount, problems, lessonId, accent, onComplete, onUpdate) {
+export function renderQuiz(mount, rawProblems, lessonId, accent, onComplete, onUpdate) {
+  // Normalize every problem into a single canonical shape so the engine works
+  // regardless of which authoring format a lesson used:
+  //   • MC with choices as strings + `correct` index + `explanation`
+  //   • MC with `options` (strings) + `correct` index + `explanation`
+  //   • MC with choices as objects { text, correct, explanation }
+  //   • fill with `answer` (+ optional `altAnswers`) + `explanation`
+  const problems = (rawProblems || []).map(normalizeProblem).filter(Boolean);
+
   let current = 0;
   let score = 0;
   const results = []; // {answered: bool, correct: bool}
+
+  function normalizeProblem(q) {
+    if (!q) return null;
+
+    // A question is multiple choice whenever it carries a choices/options
+    // array — regardless of (or despite a missing/mislabeled) `type` field.
+    const raw = q.choices || q.options;
+    const isMC = Array.isArray(raw) && raw.length > 0;
+
+    if (!isMC) {
+      return {
+        type: 'fill',
+        question: q.question,
+        answer: q.answer,
+        altAnswers: q.altAnswers || [],
+        explanation: q.explanation || '',
+      };
+    }
+
+    const objectStyle = typeof raw[0] === 'object' && raw[0] !== null;
+    let choices, correct, choiceExpl;
+    if (objectStyle) {
+      // { text, correct, explanation } per choice
+      choices    = raw.map(c => c.text);
+      correct    = raw.findIndex(c => c.correct);
+      choiceExpl = raw.map(c => c.explanation || '');
+    } else {
+      // strings; the correct choice is identified by either an index
+      // (`correct` or numeric `answer`) or the answer text itself.
+      choices = raw;
+      if (typeof q.correct === 'number')      correct = q.correct;
+      else if (typeof q.answer === 'number')  correct = q.answer;
+      else if (q.answer != null)              correct = raw.indexOf(q.answer);
+      else                                    correct = -1;
+      choiceExpl = null;
+    }
+    return {
+      type: 'mc',
+      question: q.question,
+      choices,
+      correct,
+      choiceExpl,                       // per-choice feedback (object style only)
+      explanation: q.explanation || '', // shared fallback explanation
+    };
+  }
 
   function render() {
     if (current >= problems.length) {
@@ -72,7 +125,7 @@ export function renderQuiz(mount, problems, lessonId, accent, onComplete, onUpda
         ${q.choices.map((c, i) => `
           <div class="quiz-option" data-idx="${i}" style="cursor:pointer">
             <span class="option-letter">${letters[i]}</span>
-            <span>${c}</span>
+            <span>${typeof c === 'object' && c !== null ? (c.text ?? '') : c}</span>
           </div>
         `).join('')}
       </div>
@@ -107,6 +160,7 @@ export function renderQuiz(mount, problems, lessonId, accent, onComplete, onUpda
     const nextBtn = document.getElementById('next-btn');
     const feedback = document.getElementById('feedback');
     let isCorrect = false;
+    let explanation = q.explanation || '';
 
     if (q.type === 'mc') {
       setupMCListeners(); // ensure listeners on re-render
@@ -116,14 +170,21 @@ export function renderQuiz(mount, problems, lessonId, accent, onComplete, onUpda
         feedback.className = 'quiz-feedback show incorrect';
         return;
       }
-      isCorrect = parseInt(selected) === q.correct;
+      const selectedIdx = parseInt(selected);
+      isCorrect = selectedIdx === q.correct;
       const options = mount.querySelectorAll('.quiz-option');
       options.forEach((opt, i) => {
         if (i === q.correct) opt.classList.add('correct');
-        else if (i === parseInt(selected) && !isCorrect) opt.classList.add('incorrect');
+        else if (i === selectedIdx && !isCorrect) opt.classList.add('incorrect');
         opt.style.cursor = 'default';
         opt.style.pointerEvents = 'none';
       });
+      // Prefer per-choice feedback when the lesson provides it
+      if (q.choiceExpl) {
+        explanation = isCorrect
+          ? (q.choiceExpl[q.correct] || explanation)
+          : (q.choiceExpl[selectedIdx] || q.choiceExpl[q.correct] || explanation);
+      }
     } else {
       const input = document.getElementById('fill-input');
       const userAnswer = normalizeAnswer(input?.value || '');
@@ -138,8 +199,8 @@ export function renderQuiz(mount, problems, lessonId, accent, onComplete, onUpda
     if (isCorrect) score++;
 
     feedback.innerHTML = isCorrect
-      ? `✓ Correct! ${q.explanation}`
-      : `✗ Not quite. ${q.explanation}`;
+      ? `✓ Correct! ${explanation}`
+      : `✗ Not quite. ${explanation}`;
     feedback.className = `quiz-feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
 
     checkBtn.style.display = 'none';
@@ -149,7 +210,11 @@ export function renderQuiz(mount, problems, lessonId, accent, onComplete, onUpda
   }
 
   function normalizeAnswer(str) {
-    return str.trim().toLowerCase()
+    return String(str).trim().toLowerCase()
+      .replace(/\$/g, '')               // students needn't type $…$ math delimiters
+      .replace(/\\left|\\right/g, '')    // drop LaTeX sizing macros
+      .replace(/\\,|\\!|\\;|\\:/g, '')   // drop LaTeX thin/neg spaces
+      .replace(/\\cdot|\\times/g, '*')   // \cdot / \times → *
       .replace(/\s+/g, '')
       .replace(/×/g, '*')
       .replace(/÷/g, '/')

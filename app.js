@@ -10,6 +10,35 @@ import { renderMath } from './components/math-renderer.js';
 // ============================================================
 const STORAGE_KEY = 'calc_progress_v1';
 const STREAK_KEY  = 'calc_streak_v1';
+const MODE_KEY    = 'calc_mode_v1';
+
+// ============================================================
+// COURSE MODE (AB hides BC-only content so AB students focus)
+// ============================================================
+function getMode() {
+  try { return localStorage.getItem(MODE_KEY) === 'AB' ? 'AB' : 'BC'; }
+  catch { return 'BC'; }
+}
+
+function setMode(m) {
+  try { localStorage.setItem(MODE_KEY, m === 'AB' ? 'AB' : 'BC'); } catch {}
+}
+
+// Units visible in the current mode (AB hides whole BC-only units)
+function visibleUnits() {
+  const ab = getMode() === 'AB';
+  return UNITS.filter(u => !ab || !u.bc);
+}
+
+// Lessons of a unit visible in the current mode (AB hides BC-only lessons).
+// Falls back to all lessons if filtering would leave the unit empty, so a
+// direct link to a BC unit still renders something in AB mode.
+function visibleLessons(unit) {
+  const ab = getMode() === 'AB';
+  if (!ab) return unit.lessons;
+  const filtered = unit.lessons.filter(l => !l.bc);
+  return filtered.length ? filtered : unit.lessons;
+}
 
 function getProgress() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
@@ -68,14 +97,20 @@ function getUnitProgress(unitId) {
   const unit = UNITS.find(u => u.id === unitId);
   if (!unit) return { count: 0, total: 0, pct: 0 };
   const p = getProgress();
-  const mastered = unit.lessons.filter(l => p[l.id]?.status === 'mastered').length;
-  return { count: mastered, total: unit.lessons.length, pct: Math.round((mastered / unit.lessons.length) * 100) };
+  const lessons  = visibleLessons(unit);
+  const total    = lessons.length;
+  const mastered = lessons.filter(l => p[l.id]?.status === 'mastered').length;
+  return { count: mastered, total, pct: total ? Math.round((mastered / total) * 100) : 0 };
 }
 
 function getTotalProgress() {
   const p = getProgress();
-  const mastered = Object.values(p).filter(v => v.status === 'mastered').length;
-  return { count: mastered, total: TOTAL_LESSONS, pct: Math.round((mastered / TOTAL_LESSONS) * 100) };
+  let mastered = 0, total = 0;
+  visibleUnits().forEach(u => visibleLessons(u).forEach(l => {
+    total++;
+    if (p[l.id]?.status === 'mastered') mastered++;
+  }));
+  return { count: mastered, total, pct: total ? Math.round((mastered / total) * 100) : 0 };
 }
 
 // ============================================================
@@ -103,6 +138,7 @@ const BC_BADGE = '<span style="font-size:0.65rem;font-weight:700;padding:2px 6px
 function initHeader() {
   document.getElementById('site-header').innerHTML = renderHeader();
   updateHeaderProgress();
+  initModeToggle();
 
   const menuBtn = document.getElementById('mobile-menu-btn');
   const nav     = document.getElementById('header-nav');
@@ -120,6 +156,28 @@ function initHeader() {
       });
     });
   }
+}
+
+function initModeToggle() {
+  const toggle = document.getElementById('mode-toggle');
+  if (!toggle) return;
+  const apply = mode => {
+    toggle.querySelectorAll('.mode-btn').forEach(b => {
+      const on = b.dataset.mode === mode;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+  };
+  apply(getMode());
+  toggle.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (getMode() === btn.dataset.mode) return;
+      setMode(btn.dataset.mode);
+      apply(btn.dataset.mode);
+      handleRoute();          // re-render current page for the new scope
+      updateHeaderProgress();
+    });
+  });
 }
 
 function updateHeaderProgress() {
@@ -179,6 +237,8 @@ async function handleRoute() {
 function renderHomePage() {
   const { count, total, pct } = getTotalProgress();
   const streak = getStreak();
+  const units  = visibleUnits();
+  const mode   = getMode();
 
   document.getElementById('main-content').innerHTML = `
     <section class="hero">
@@ -186,8 +246,10 @@ function renderHomePage() {
         <div class="hero-badge">✦ AP Calculus AB/BC Mastery</div>
         <h1>Learn AP Calculus<br>Step by Step</h1>
         <p class="hero-subtitle">
-          10 units · 61 lessons · worked examples · practice problems with instant feedback
-          <br><span style="font-size:0.85em;opacity:0.8">Units 9–10 and selected lessons are <span style="color:#ec4899;font-weight:600">BC</span>-only</span>
+          ${units.length} units · ${total} lessons · worked examples · practice problems with instant feedback
+          <br><span style="font-size:0.85em;opacity:0.8">${mode === 'AB'
+            ? 'Showing <span style="color:var(--color-cyan);font-weight:600">AB</span> content only — switch to <span style="color:#ec4899;font-weight:600">BC</span> in the header for the full course'
+            : 'Units 9–10 and selected lessons are <span style="color:#ec4899;font-weight:600">BC</span>-only — switch to <span style="color:var(--color-cyan);font-weight:600">AB</span> in the header to hide them'}</span>
         </p>
         <div class="hero-stats">
           <div class="hero-stat">
@@ -213,7 +275,7 @@ function renderHomePage() {
           <span class="section-subtitle">${pct}% complete</span>
         </div>
         <div class="units-grid">
-          ${UNITS.map(unit => {
+          ${units.map(unit => {
             const up = getUnitProgress(unit.id);
             const accent = ACCENTS[unit.id];
             return `
@@ -221,7 +283,7 @@ function renderHomePage() {
                 <div class="unit-card-header">
                   <div class="unit-number">${unit.icon || unit.id}</div>
                   <div style="display:flex;align-items:center;gap:6px">
-                    <span class="unit-lesson-count">${unit.lessons.length} lessons</span>
+                    <span class="unit-lesson-count">${visibleLessons(unit).length} lessons</span>
                     ${unit.bc ? '<span style="font-size:0.65rem;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(236,72,153,0.15);color:#ec4899;border:1px solid rgba(236,72,153,0.3)">BC</span>' : ''}
                   </div>
                 </div>
@@ -280,7 +342,7 @@ async function renderUnitPage(unitId) {
     </div>
     <div class="lessons-list">
       <div class="container">
-        ${unit.lessons.map(lesson => {
+        ${visibleLessons(unit).map(lesson => {
           const status     = p[lesson.id]?.status || 'not-started';
           const isMastered = status === 'mastered';
           const isStarted  = status === 'in-progress' || status === 'attempted';
@@ -320,9 +382,15 @@ async function getLessonData(unitId, lessonId) {
 }
 
 function getPrevNext(lessonId) {
-  const all = UNITS.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id })));
+  // Navigate within the lessons visible in the current mode, but if the
+  // current lesson is itself hidden (e.g. a BC lesson opened via direct link
+  // in AB mode) fall back to the full ordered list so prev/next still work.
+  let all = visibleUnits().flatMap(u => visibleLessons(u).map(l => ({ ...l, unitId: u.id })));
+  if (!all.some(l => l.id === lessonId)) {
+    all = UNITS.flatMap(u => u.lessons.map(l => ({ ...l, unitId: u.id })));
+  }
   const idx = all.findIndex(l => l.id === lessonId);
-  return { prev: idx > 0 ? all[idx - 1] : null, next: idx < all.length - 1 ? all[idx + 1] : null };
+  return { prev: idx > 0 ? all[idx - 1] : null, next: idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null };
 }
 
 async function renderLessonPage(lessonId) {
@@ -384,6 +452,7 @@ async function renderLessonPage(lessonId) {
           <a href="#unit/${unitId}" class="btn btn-secondary">Unit ${unitId} Overview</a>
           ${next ? `<a href="#lesson/${next.id}" class="btn btn-primary">${next.title} →</a>` : '<span></span>'}
         </div>
+        <p style="text-align:center;margin-top:16px;font-size:0.78rem;color:var(--color-text-muted)">Tip: use the <kbd>←</kbd> and <kbd>→</kbd> arrow keys to move between lessons.</p>
       </div>
     </div>
   `;
@@ -535,6 +604,21 @@ handleRoute();
 window.addEventListener('hashchange', () => {
   handleRoute();
   window.scrollTo(0, 0);
+});
+
+// Keyboard navigation: ← / → jump to the previous/next lesson while reading.
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+
+  const hash = location.hash.slice(1);
+  if (!hash.startsWith('lesson/')) return;
+  const lessonId = hash.split('/')[1];
+  const { prev, next } = getPrevNext(lessonId);
+  if (e.key === 'ArrowLeft' && prev)  { e.preventDefault(); location.hash = `#lesson/${prev.id}`; }
+  if (e.key === 'ArrowRight' && next) { e.preventDefault(); location.hash = `#lesson/${next.id}`; }
 });
 
 window.addEventListener('progress:synced', () => {

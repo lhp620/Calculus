@@ -257,6 +257,54 @@ p { color: var(--color-text-secondary); margin-bottom: 1rem; }
   height: 20px;
 }
 
+/* AB/BC course-mode toggle */
+.mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.mode-btn {
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 4px 11px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mode-btn:hover {
+  color: var(--color-text-primary);
+}
+
+.mode-btn.active {
+  background: var(--color-violet);
+  color: #fff;
+}
+
+kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font-family: inherit;
+  font-size: 0.85em;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid var(--color-border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+}
+
 /* Main content offset for fixed header */
 main {
   padding-top: var(--header-height);

@@ -129,7 +129,7 @@ const html = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AP Calculus AB/BC — Interactive Learning</title>
-  <meta name="description" content="Master AP Calculus AB and BC with 10 units and 61 interactive lessons.">
+  <meta name="description" content="Master AP Calculus AB and BC with 10 units and 62 interactive lessons.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>∫</text></svg>">
   <style>
 /* ── KaTeX ── */
@@ -147,7 +147,7 @@ ${appCSS}
     <main id="main-content" role="main" aria-label="Page content"></main>
     <footer class="site-footer">
       <div class="container">
-        <p>AP Calculus AB/BC Interactive Learning &nbsp;·&nbsp; 10 Units &nbsp;·&nbsp; 61 Lessons &nbsp;·&nbsp; Progress saved in your browser</p>
+        <p>AP Calculus AB/BC Interactive Learning &nbsp;·&nbsp; 10 Units &nbsp;·&nbsp; 62 Lessons &nbsp;·&nbsp; Progress saved in your browser</p>
       </div>
     </footer>
   </div>
